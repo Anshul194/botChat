@@ -129,6 +129,20 @@ export default function RootLayout({
                 "@type": "ContactPoint",
                 contactType: "customer support",
                 email: "support@megadm.chat",
+                telephone: "+91-9111022290",
+              },
+              author: {
+                "@type": "Organization",
+                name: "MEGASTACK AI LLP",
+                url: "https://megadm.chat",
+                address: {
+                  "@type": "PostalAddress",
+                  streetAddress: "Cabin No. H, 3rd Floor, E-3/114, Arera Colony, Mahaveer Nagar, Habibganj Police Station, Huzur",
+                  addressLocality: "Bhopal",
+                  addressRegion: "Madhya Pradesh",
+                  postalCode: "462016",
+                  addressCountry: "IN",
+                },
               },
             }),
           }}

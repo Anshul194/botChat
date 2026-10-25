@@ -34,6 +34,7 @@ const LEGAL_LINKS = [
     { label: "Accessibility Statement", href: "/home/accessibility" },
     { label: "Cookie Policy", href: "/home/cookie_policy" },
     { label: "Browser Caching", href: "/home/browser_caching" },
+    { label: "Contact Us", href: "/contact" },
     { label: "Sitemap", href: "/sitemap.xml" },
 ];
 
@@ -58,7 +59,7 @@ export default function Footer() {
     const general = useSelector((state: RootState) => state.settings?.general);
     const platformName: string = sanitizeAppName(settings.appName || (general as any)?.siteName || (general as any)?.platformName || PLATFORM_NAME);
     const platformTagline: string = (general as any)?.tagline || PLATFORM_TAGLINE;
-    const supportEmail: string = (general as any)?.supportEmail || (general as any)?.email || "";
+    const supportEmail: string = (general as any)?.supportEmail || (general as any)?.email || "support@megadm.chat";
     const socialLinks = {
         instagram: (general as any)?.instagramUrl || "#",
         twitter: (general as any)?.twitterUrl || "#",
@@ -222,9 +223,14 @@ export default function Footer() {
                     style={{ borderColor: "rgba(255,255,255,0.06)" }}>
 
                     <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-                        <p className="text-center md:text-left text-[11px] font-bold uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.4)" }}>
-                            &copy; {currentYear} {platformName}. Proudly built for the next billion creators.
-                        </p>
+                        <div className="flex flex-col gap-1 text-center md:text-left">
+                            <p className="text-[11px] font-bold uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.4)" }}>
+                                &copy; {currentYear} {platformName}. Operated by MEGASTACK AI LLP. All rights reserved.
+                            </p>
+                            <p className="text-[10px] font-medium" style={{ color: "rgba(255,255,255,0.25)" }}>
+                                MegaDM is a product operated by MEGASTACK AI LLP &bull; Bhopal, Madhya Pradesh, India
+                            </p>
+                        </div>
                         <div className="flex items-center gap-3 px-5 py-2.5 rounded-full border cursor-default group transition-colors duration-300"
                             style={{ background: "rgba(255,255,255,0.03)", borderColor: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.45)" }}
                             onMouseEnter={(e) => ((e.currentTarget as HTMLDivElement).style.color = "#fff")}

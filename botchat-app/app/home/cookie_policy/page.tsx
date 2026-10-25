@@ -73,6 +73,25 @@ export default function CookiePolicy() {
             Most modern web browsers allow you to manage cookies through their settings. You can delete existing cookies, block third-party cookies, or configure your browser to notify you when a new cookie is set. Please note that disabling essential cookies will prevent you from signing into the dashboard.
           </p>
         </section>
+
+        <section className="pt-8 border-t border-zinc-200 dark:border-zinc-800">
+          <div className="flex items-center gap-4 mb-6">
+            <span className="flex items-center justify-center w-8 h-8 rounded-full bg-[#FF2D78]/10 text-[#FF2D78] font-black text-sm">5</span>
+            <h2 className="text-2xl md:text-3xl font-black text-zinc-900 dark:text-white tracking-tight">Legal Entity &amp; Contact Information</h2>
+          </div>
+          <div className="pl-12 text-zinc-600 dark:text-zinc-400 space-y-2">
+            <p>MegaDM is operated by MEGASTACK AI LLP. For any cookie policy questions or assistance:</p>
+            <p className="mt-2">
+              Email: <a href="mailto:support@megadm.chat" className="text-[#FF2D78] hover:underline font-bold">support@megadm.chat</a>
+            </p>
+            <p>
+              Phone: +91 9111022290
+            </p>
+            <p className="text-sm text-zinc-500">
+              Registered Office: Cabin No. H, 3rd Floor, E-3/114, Arera Colony, Mahaveer Nagar, Habibganj Police Station, Huzur, Bhopal - 462016, Madhya Pradesh, India
+            </p>
+          </div>
+        </section>
       </div>
     </article>
   );

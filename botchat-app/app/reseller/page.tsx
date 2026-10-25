@@ -566,9 +566,9 @@ export default function ResellerLanding() {
               </p>
             </div>
             {[
-              { title: "Quick Links", links: ["Features", "Pricing", "FAQ"] },
-              { title: "Company", links: ["About", "Terms of Service", "Privacy Policy"] },
-              { title: "Contact", links: ["hello@megadm.in", "+91 97365 67890"] },
+              { title: "Quick Links", links: [{ label: "Features", href: "/features" }, { label: "Pricing", href: "/pricing" }, { label: "FAQ", href: "/faq" }] },
+              { title: "Company", links: [{ label: "About", href: "/about" }, { label: "Terms of Use", href: "/home/terms_use" }, { label: "Privacy Policy", href: "/home/privacy_policy" }] },
+              { title: "Contact", links: [{ label: "support@megadm.chat", href: "mailto:support@megadm.chat" }, { label: "+91 9111022290", href: "tel:+919111022290" }] },
             ].map((col, i) => (
               <div key={i}>
                 <h4 className="text-xs font-black uppercase tracking-widest mb-2.5 sm:mb-3" style={{ color: "rgba(255,255,255,0.30)" }}>
@@ -576,9 +576,9 @@ export default function ResellerLanding() {
                 </h4>
                 <ul className="space-y-2 sm:space-y-2.5">
                   {col.links.map((l) => (
-                    <li key={l}>
-                      <a href="#" className="text-xs sm:text-sm transition-colors hover:text-white" style={{ color: "rgba(255,255,255,0.50)" }}>
-                        {l}
+                    <li key={l.label}>
+                      <a href={l.href} className="text-xs sm:text-sm transition-colors hover:text-white" style={{ color: "rgba(255,255,255,0.50)" }}>
+                        {l.label}
                       </a>
                     </li>
                   ))}
@@ -588,7 +588,7 @@ export default function ResellerLanding() {
           </div>
           <div className="pt-6 flex flex-col sm:flex-row justify-between items-center gap-3 text-center sm:text-left" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
             <p className="text-xs" style={{ color: "rgba(255,255,255,0.30)" }}>
-              © 2025 MegaDM. All rights reserved.
+              &copy; {new Date().getFullYear()} MegaDM. Operated by MEGASTACK AI LLP. All rights reserved.
             </p>
             <div className="flex items-center gap-1.5">
               <Instagram className="w-3.5 h-3.5" style={{ color: "#FF2D78" }} />

@@ -21,8 +21,8 @@ export interface TourStep {
 const tourSteps: TourStep[] = [
     {
         id: "welcome",
-        title: "Welcome to BotChat! 👋",
-        description: "This quick tour will show you how to use BotChat to automate your messages and save hours of time. \n\nClick 'Next' to explore the most important features.",
+        title: "Welcome to MegaDM! 👋",
+        description: "This quick tour will show you how to use MegaDM to automate your messages and save hours of time. \n\nClick 'Next' to explore the most important features.",
         target: "[data-tour='dashboard-header']",
         placement: "bottom",
         route: "/dashboard",
@@ -74,7 +74,7 @@ const tourSteps: TourStep[] = [
     {
         id: "nav-ai-training",
         title: "AI Training",
-        description: "This is the most powerful feature in BotChat: The AI Brain. Let's see how it works.",
+        description: "This is the most powerful feature in MegaDM: The AI Brain. Let's see how it works.",
         target: "[data-tour='sidebar-ai-training']",
         placement: "right",
         scrollToTarget: false,

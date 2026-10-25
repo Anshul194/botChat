@@ -76,7 +76,7 @@ export default function DisclaimerPage() {
         <section>
           <h2 className="text-2xl font-bold text-foreground mb-4">5. Limitation of Liability</h2>
           <p className="bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 p-6 rounded-2xl italic text-zinc-700 dark:text-zinc-350">
-            TO THE FULLEST EXTENT PERMITTED BY APPLICABLE LAW, MEGADMSHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES ARISING FROM YOUR USE OF THE PLATFORM OR ANY CACHING DELAYS, DATA INACCURACIES, OR SERVICE INTERRUPTIONS. OUR TOTAL AGGREGATE LIABILITY SHALL NOT EXCEED THE TOTAL FEES YOU PAID TO MEGADMIN THE TWELVE MONTHS PRECEDING THE CLAIM.
+            TO THE FULLEST EXTENT PERMITTED BY APPLICABLE LAW, MEGADM AND ITS OPERATING ENTITY MEGASTACK AI LLP SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES ARISING FROM YOUR USE OF THE PLATFORM OR ANY CACHING DELAYS, DATA INACCURACIES, OR SERVICE INTERRUPTIONS. OUR TOTAL AGGREGATE LIABILITY SHALL NOT EXCEED THE TOTAL FEES YOU PAID TO MEGADM IN THE TWELVE MONTHS PRECEDING THE CLAIM.
           </p>
         </section>
 
@@ -88,10 +88,16 @@ export default function DisclaimerPage() {
         </section>
 
         <section className="pt-8 border-t border-zinc-200 dark:border-white/10">
-          <h2 className="text-2xl font-bold text-foreground mb-4">7. Contact Information</h2>
-          <p>For questions regarding this disclaimer, cache behavior, or data accuracy concerns:</p>
+          <h2 className="text-2xl font-bold text-foreground mb-4">7. Legal Entity &amp; Contact Information</h2>
+          <p>MegaDM is operated by MEGASTACK AI LLP. For questions regarding this disclaimer, cache behavior, or data accuracy concerns:</p>
           <p className="mt-4">
             Email: <a href="mailto:support@megadm.chat" className="text-[#ec4899] hover:underline font-bold">support@megadm.chat</a>
+          </p>
+          <p className="mt-2">
+            Phone: +91 9111022290
+          </p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Registered Office: Cabin No. H, 3rd Floor, E-3/114, Arera Colony, Mahaveer Nagar, Habibganj Police Station, Huzur, Bhopal - 462016, Madhya Pradesh, India
           </p>
         </section>
       </div>

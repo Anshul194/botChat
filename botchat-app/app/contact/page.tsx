@@ -97,36 +97,67 @@ export default function ContactPage() {
                                             </div>
                                             <div>
                                                 <div style={{ fontSize: '13px', fontWeight: 600, color: 'rgba(255,255,255,0.75)' }}>Customer Support</div>
-                                                <a href="mailto:support@megadm.com" style={{ fontSize: '15px', fontWeight: 700, color: '#ffffff' }} className="hover:underline">
-                                                    support@megadm.com
+                                                <a href="mailto:support@megadm.chat" style={{ fontSize: '15px', fontWeight: 700, color: '#ffffff' }} className="hover:underline">
+                                                    support@megadm.chat
                                                 </a>
                                             </div>
                                         </div>
 
                                         <div className="flex items-start gap-4 p-4 rounded-2xl" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
                                             <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: 'rgba(124,58,237,0.15)' }}>
-                                                <Users className="w-5 h-5" style={{ color: '#A78BFA' }} />
+                                                <Phone className="w-5 h-5" style={{ color: '#A78BFA' }} />
                                             </div>
                                             <div>
-                                                <div style={{ fontSize: '13px', fontWeight: 600, color: 'rgba(255,255,255,0.75)' }}>Sales & Enterprise</div>
-                                                <a href="mailto:sales@megadm.com" style={{ fontSize: '15px', fontWeight: 700, color: '#ffffff' }} className="hover:underline">
-                                                    sales@megadm.com
+                                                <div style={{ fontSize: '13px', fontWeight: 600, color: 'rgba(255,255,255,0.75)' }}>Official Business Phone</div>
+                                                <a href="tel:+919111022290" style={{ fontSize: '15px', fontWeight: 700, color: '#ffffff' }} className="hover:underline">
+                                                    +91 9111022290
                                                 </a>
                                             </div>
                                         </div>
 
                                         <div className="flex items-start gap-4 p-4 rounded-2xl" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
                                             <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: 'rgba(16,185,129,0.15)' }}>
-                                                <Layers className="w-5 h-5" style={{ color: '#10B981' }} />
+                                                <Users className="w-5 h-5" style={{ color: '#10B981' }} />
+                                            </div>
+                                            <div>
+                                                <div style={{ fontSize: '13px', fontWeight: 600, color: 'rgba(255,255,255,0.75)' }}>Sales & Enterprise</div>
+                                                <a href="mailto:sales@megadm.chat" style={{ fontSize: '15px', fontWeight: 700, color: '#ffffff' }} className="hover:underline">
+                                                    sales@megadm.chat
+                                                </a>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-start gap-4 p-4 rounded-2xl" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                                            <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: 'rgba(59,130,246,0.15)' }}>
+                                                <Layers className="w-5 h-5" style={{ color: '#60A5FA' }} />
                                             </div>
                                             <div>
                                                 <div style={{ fontSize: '13px', fontWeight: 600, color: 'rgba(255,255,255,0.75)' }}>White Label & Agencies</div>
-                                                <a href="mailto:partners@megadm.com" style={{ fontSize: '15px', fontWeight: 700, color: '#ffffff' }} className="hover:underline">
-                                                    partners@megadm.com
+                                                <a href="mailto:partners@megadm.chat" style={{ fontSize: '15px', fontWeight: 700, color: '#ffffff' }} className="hover:underline">
+                                                    partners@megadm.chat
                                                 </a>
                                             </div>
                                         </div>
                                     </div>
+                                </div>
+
+                                {/* Legal Entity & Registered Office Card */}
+                                <div className="p-7 rounded-3xl" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)' }}>
+                                    <div className="flex items-start gap-3.5 mb-3">
+                                        <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0" style={{ background: 'rgba(255,45,120,0.15)' }}>
+                                            <MapPin className="w-4 h-4" style={{ color: '#FF2D78' }} />
+                                        </div>
+                                        <div>
+                                            <div style={{ fontSize: '15px', fontWeight: 800, color: '#ffffff' }}>Registered Office</div>
+                                            <div style={{ fontSize: '12px', fontWeight: 700, color: '#FF80AB', marginTop: '2px' }}>MEGASTACK AI LLP</div>
+                                        </div>
+                                    </div>
+                                    <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.75)', lineHeight: 1.6, fontWeight: 500 }}>
+                                        Cabin No. H, 3rd Floor, E-3/114, Arera Colony, Mahaveer Nagar, Habibganj Police Station, Huzur, Bhopal - 462016, Madhya Pradesh, India
+                                    </p>
+                                    <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.45)', marginTop: '10px', fontWeight: 500 }}>
+                                        MegaDM is a product and service operated by MEGASTACK AI LLP.
+                                    </p>
                                 </div>
 
                                 {/* Response Time Card */}

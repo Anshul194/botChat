@@ -19,14 +19,14 @@ export default function TermsOfUse() {
       <div className="space-y-12 leading-relaxed text-foreground">
         <section>
           <p>
-            Welcome to <strong>MegaDM Chat</strong>. These Terms of Use ("Terms") govern your access to and use of our SaaS platform, website, and social media automation services (collectively, the "Service"). By accessing or using MegaDM Chat, you agree to be bound by these Terms.
+            Welcome to <strong>MegaDM</strong>. These Terms of Use (&quot;Terms&quot;) govern your access to and use of our SaaS platform, website, and social media automation services (collectively, the &quot;Service&quot;). MegaDM is a product operated by MEGASTACK AI LLP. By accessing or using MegaDM, you agree to be bound by these Terms.
           </p>
         </section>
 
         <section>
           <h2 className="text-2xl font-bold text-foreground mb-4">1. Introduction</h2>
           <p>
-            MegaDM Chat is a multi-tenant SaaS platform designed to provide automation tools for Facebook and Instagram. Our services include chatbot building, automated comment replies, persistent menu management, and multi-user team access. The Service is provided by MegaDM Chat.
+            MegaDM is a multi-tenant SaaS platform designed to provide automation tools for Facebook and Instagram. Our services include chatbot building, automated comment replies, persistent menu management, and multi-user team access. The Service is operated by MEGASTACK AI LLP.
           </p>
         </section>
 
@@ -92,7 +92,7 @@ export default function TermsOfUse() {
         <section>
           <h2 className="text-2xl font-bold text-foreground mb-4">9. Limitation of Liability</h2>
           <p className="bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 p-6 rounded-2xl italic text-zinc-700 dark:text-zinc-350">
-            TO THE FULLEST EXTENT PERMITTED BY LAW, MEGADOM CHAT SHALL NOT BE LIABLE FOR ANY INDIRECT, CONSEQUENTIAL, OR INCIDENTAL DAMAGES ARISING FROM YOUR USE OF THE SERVICE. OUR TOTAL AGGREGATE LIABILITY SHALL NOT EXCEED THE TOTAL FEES PAID BY YOU IN THE TWELVE MONTHS PRIOR TO THE CLAIM.
+            TO THE FULLEST EXTENT PERMITTED BY LAW, MEGADM AND ITS OPERATING ENTITY MEGASTACK AI LLP SHALL NOT BE LIABLE FOR ANY INDIRECT, CONSEQUENTIAL, OR INCIDENTAL DAMAGES ARISING FROM YOUR USE OF THE SERVICE. OUR TOTAL AGGREGATE LIABILITY SHALL NOT EXCEED THE TOTAL FEES PAID BY YOU IN THE TWELVE MONTHS PRIOR TO THE CLAIM.
           </p>
         </section>
 
@@ -104,12 +104,18 @@ export default function TermsOfUse() {
         </section>
 
         <section className="pt-8 border-t border-zinc-200 dark:border-white/10">
-          <h2 className="text-2xl font-bold text-foreground mb-4">11. Contact Information</h2>
-          <p>If you have questions regarding these Terms, please contact us at:</p>
+          <h2 className="text-2xl font-bold text-foreground mb-4">11. Legal Entity &amp; Contact Information</h2>
+          <p>MegaDM is operated by MEGASTACK AI LLP. If you have questions regarding these Terms, please contact us:</p>
           <p className="mt-4">
-            <a href="mailto:legal@megadm.chat" className="text-[#ec4899] hover:underline font-bold">
-              legal@megadm.chat
+            Email: <a href="mailto:support@megadm.chat" className="text-[#ec4899] hover:underline font-bold">
+              support@megadm.chat
             </a>
+          </p>
+          <p className="mt-2">
+            Phone: +91 9111022290
+          </p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Registered Office: Cabin No. H, 3rd Floor, E-3/114, Arera Colony, Mahaveer Nagar, Habibganj Police Station, Huzur, Bhopal - 462016, Madhya Pradesh, India
           </p>
         </section>
       </div>

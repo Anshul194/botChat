@@ -713,7 +713,7 @@ export default function TenantLandingClient({ tenantData }: { tenantData: Tenant
           </div>
           <div className="pt-6 flex flex-col sm:flex-row justify-between items-center gap-3 text-center sm:text-left" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
             <p className="text-xs" style={{ color: "rgba(255,255,255,0.30)" }}>
-              © 2025 {tenantData.branding?.company_name || 'MegaDM'}. All rights reserved.
+              &copy; {new Date().getFullYear()} {tenantData.branding?.company_name || 'MegaDM'}. All rights reserved.
             </p>
             <div className="flex items-center gap-1.5">
               <Instagram className="w-3.5 h-3.5" style={{ color: "#FF2D78" }} />

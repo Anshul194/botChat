@@ -59,7 +59,7 @@ export default function VerificationBanner() {
                             </span>
                         </h4>
                         <p className="text-xs text-[#94a3b8] mt-0.5">
-                            Check your inbox for a verification link to unlock all features of BotChat.
+                            Check your inbox for a verification link to unlock all features of MegaDM.
                         </p>
                     </div>
                 </div>

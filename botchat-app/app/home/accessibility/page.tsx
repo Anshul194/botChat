@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Accessibility Statement — MegaDM",
-  description: "MegaDM is committed to ensuring digital accessibility for all users. Read our accessibility statement including German Sign Language (DGS) and easy-to-read language options.",
+  description: "MegaDM is committed to ensuring digital accessibility for all users. Read our accessibility statement and easy-to-read language options.",
 };
 
 export default function AccessibilityPage() {
@@ -51,7 +51,7 @@ export default function AccessibilityPage() {
         <section id="feedback">
           <h2 className="text-2xl font-bold text-foreground mb-4">4. Feedback & Reporting Barriers</h2>
           <p>
-            We welcome your feedback on the accessibility of MegaDM. Please let us know if you encounter accessibility barriers:
+            We welcome your feedback on the accessibility of MegaDM. MegaDM is operated by MEGASTACK AI LLP. Please let us know if you encounter accessibility barriers:
           </p>
           <ul className="list-disc pl-6 mt-4 space-y-3">
             <li>
@@ -61,10 +61,10 @@ export default function AccessibilityPage() {
               </a>
             </li>
             <li>
-              <strong>Phone:</strong> +49 30 12345678
+              <strong>Phone:</strong> +91 9111022290
             </li>
             <li>
-              <strong>Postal Address:</strong> BotChat GmbH, Accessibility Team, Musterstraße 1, 10115 Berlin, Germany
+              <strong>Postal Address:</strong> MEGASTACK AI LLP, Accessibility Team, Cabin No. H, 3rd Floor, E-3/114, Arera Colony, Mahaveer Nagar, Habibganj Police Station, Huzur, Bhopal - 462016, Madhya Pradesh, India
             </li>
           </ul>
           <p className="mt-4">
@@ -73,18 +73,18 @@ export default function AccessibilityPage() {
         </section>
 
         <section id="sign-language">
-          <h2 className="text-2xl font-bold text-foreground mb-4">5. German Sign Language (DGS)</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-4">5. Sign Language &amp; Accessible Media</h2>
           <p>
-            A German Sign Language (DGS) version of this accessibility statement is available. You can access the DGS video below:
+            An accessible video version of this accessibility statement is available:
           </p>
           <div className="bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 p-8 rounded-[32px] mt-6 text-center">
-            <p className="text-muted-foreground text-lg mb-4">&#x1F5E3;&#xFE0F; DGS Video: Accessibility Statement</p>
+            <p className="text-muted-foreground text-lg mb-4">&#x1F5E3;&#xFE0F; Accessible Media: Accessibility Statement</p>
             <div className="w-full max-w-2xl mx-auto aspect-video bg-zinc-200/50 dark:bg-white/10 rounded-2xl flex items-center justify-center border border-zinc-300 dark:border-white/5">
-              <p className="text-muted-foreground text-sm">DGS video content will be available here.</p>
+              <p className="text-muted-foreground text-sm">Accessible media video content will be available here.</p>
             </div>
             <p className="mt-4 text-muted-foreground text-sm">
               Alternatively, you can download the{" "}
-              <a href="#" className="text-[#ec4899] hover:underline font-bold">DGS transcript (PDF)</a>.
+              <a href="#" className="text-[#ec4899] hover:underline font-bold">accessible transcript (PDF)</a>.
             </p>
           </div>
         </section>
@@ -133,29 +133,32 @@ export default function AccessibilityPage() {
         </section>
 
         <section id="complaints">
-          <h2 className="text-2xl font-bold text-foreground mb-4">9. Filing a Complaint</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-4">9. Grievance &amp; Complaints</h2>
           <p>
-            If you are not satisfied with our response to your accessibility feedback, you have the right to file a complaint with the relevant national authority:
+            If you are not satisfied with our response to your accessibility feedback, you may escalate your request to our Grievance &amp; Accessibility team:
           </p>
           <div className="bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 p-8 rounded-[32px] mt-6">
-            <p className="font-bold text-foreground">Competent Authority for Accessibility</p>
-            <p className="mt-2">
-              Federal Office for Accessibility<br />
-              Musterweg 10<br />
-              10115 Berlin, Germany<br />
-              Email: <a href="mailto:office@accessibility-office.de" className="text-[#ec4899] hover:underline font-bold">office@accessibility-office.de</a>
+            <p className="font-bold text-foreground">MEGASTACK AI LLP — Grievance &amp; Accessibility Desk</p>
+            <p className="mt-2 text-sm leading-relaxed">
+              Cabin No. H, 3rd Floor, E-3/114, Arera Colony, Mahaveer Nagar, Habibganj Police Station, Huzur,<br />
+              Bhopal - 462016, Madhya Pradesh, India<br />
+              Phone: +91 9111022290<br />
+              Email: <a href="mailto:support@megadm.chat" className="text-[#ec4899] hover:underline font-bold">support@megadm.chat</a>
             </p>
           </div>
         </section>
 
         <section className="pt-8 border-t border-zinc-200 dark:border-white/10">
           <h2 className="text-2xl font-bold text-foreground mb-4">10. Contact Information</h2>
-          <p>For all accessibility-related inquiries:</p>
+          <p>MegaDM is operated by MEGASTACK AI LLP. For all accessibility-related inquiries:</p>
           <p className="mt-4">
-            Email: <a href="mailto:accessibility@megadm.chat" className="text-[#ec4899] hover:underline font-bold">accessibility@megadm.chat</a>
+            Email: <a href="mailto:support@megadm.chat" className="text-[#ec4899] hover:underline font-bold">support@megadm.chat</a>
           </p>
           <p className="mt-2">
-            Phone: +49 30 12345678
+            Phone: +91 9111022290
+          </p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Registered Office: Cabin No. H, 3rd Floor, E-3/114, Arera Colony, Mahaveer Nagar, Habibganj Police Station, Huzur, Bhopal - 462016, Madhya Pradesh, India
           </p>
         </section>
       </div>

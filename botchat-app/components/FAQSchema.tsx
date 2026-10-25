@@ -1,7 +1,7 @@
 const faqs = [
   {
-    question: "Is LinkDM officially compliant with Meta (Facebook/Instagram)?",
-    answer: "Yes, 100%. We use the Official Messenger API and follow all Meta developer guidelines. Unlike 'grey-hat' scrapers, LinkDM is a verified partner tool, meaning your credentials are safe and your account remains in perfect standing.",
+    question: "Is MegaDM officially compliant with Meta (Facebook/Instagram)?",
+    answer: "Yes, 100%. We use the Official Messenger API and follow all Meta developer guidelines. Unlike 'grey-hat' scrapers, MegaDM is fully compliant, meaning your credentials are safe and your account remains in perfect standing.",
   },
   {
     question: "Will my Instagram account get flagged or banned for automation?",
@@ -13,15 +13,15 @@ const faqs = [
   },
   {
     question: "Can I collect emails and sync them to my CRM (Klaviyo/Mailchimp)?",
-    answer: "Absolutely. LinkDM features 'Intelligent Data Capture.' Our AI prompts users for their email naturally within the flow, validates it, and syncs it instantly to your preferred marketing tool.",
+    answer: "Absolutely. MegaDM features 'Intelligent Data Capture.' Our AI prompts users for their email naturally within the flow, validates it, and syncs it instantly to your preferred marketing tool.",
   },
   {
     question: "Do I need any technical skill or coding to set this up?",
-    answer: "Zero. If you can type a message, you can use LinkDM. Our 'Logic-Mapper' is a visual drag-and-drop system. You can have your first Reel fully automated in less than 3 minutes.",
+    answer: "Zero. If you can type a message, you can use MegaDM. Our 'Logic-Mapper' is a visual drag-and-drop system. You can have your first Reel fully automated in less than 3 minutes.",
   },
   {
     question: "Can I use my own domain for my Bio Link?",
-    answer: "Absolutely. You can use your custom domain or a subdomain to maintain brand consistency. We also provide SEO-optimized slugs (e.g., botchat.com/yourname) that load in under 1 second.",
+    answer: "Absolutely. You can use your custom domain or a subdomain to maintain brand consistency. We also provide SEO-optimized slugs (e.g., megadm.chat/yourname) that load in under 1 second.",
   }
 ];
 

@@ -19,14 +19,14 @@ export default function PrivacyPolicy() {
       <div className="space-y-12 leading-relaxed text-foreground">
         <section>
           <p>
-            At <strong>MegaDM Chat</strong>, we value your privacy and are committed to protecting your personal data. This Privacy Policy outlines how we collect, use, and process your information when you use our social media automation platform.
+            At <strong>MegaDM</strong>, a service operated by <strong>MEGASTACK AI LLP</strong>, we value your privacy and are committed to protecting your personal data. This Privacy Policy outlines how we collect, use, and process your information when you use our social media automation platform.
           </p>
         </section>
 
         <section>
           <h2 className="text-2xl font-bold text-foreground mb-4">1. Introduction</h2>
           <p>
-            This policy applies to all users of the MegaDM Chat platform and describes our practices regarding data collected via our website and integrated Meta APIs (Facebook and Instagram).
+            This policy applies to all users of the MegaDM platform and describes our practices regarding data collected via our website and integrated Meta APIs (Facebook and Instagram).
           </p>
         </section>
 
@@ -59,7 +59,7 @@ export default function PrivacyPolicy() {
             <li>Comply with Meta's developer requirements and platform policies.</li>
           </ul>
           <div className="bg-[#ec4899]/10 dark:bg-[#ec4899]/5 border-l-4 border-[#ec4899] p-4 mt-6">
-            <p className="font-bold text-foreground">MegaDM Chat DOES NOT sell user data to third parties.</p>
+            <p className="font-bold text-foreground">MegaDM DOES NOT sell user data to third parties.</p>
           </div>
         </section>
 
@@ -116,19 +116,25 @@ export default function PrivacyPolicy() {
               <strong>In-App Deletion:</strong> Navigate to your Account Settings -&gt; Data Management -&gt; "Delete All My Data." This action is permanent.
             </li>
             <li>
-              <strong>Revoke Meta Access:</strong> Go to your Facebook Profile -&gt; Settings &amp; Privacy -&gt; Settings -&gt; Business Integrations. Select "MegaDM Chat" and click "Remove." We will automatically purge tokens and associated metadata within 48 hours of detecting revocation.
+              <strong>Revoke Meta Access:</strong> Go to your Facebook Profile -&gt; Settings &amp; Privacy -&gt; Settings -&gt; Business Integrations. Select "MegaDM" and click "Remove." We will automatically purge tokens and associated metadata within 48 hours of detecting revocation.
             </li>
             <li>
-              <strong>Manual Request:</strong> Email <a href="mailto:privacy@megadm.chat" className="text-[#ec4899] hover:underline font-bold">privacy@megadm.chat</a> with the subject "Data Deletion Request." Include your account email or Meta Page ID. We will confirm deletion within 30 days.
+              <strong>Manual Request:</strong> Email <a href="mailto:support@megadm.chat" className="text-[#ec4899] hover:underline font-bold">support@megadm.chat</a> with the subject "Data Deletion Request." Include your account email or Meta Page ID. We will confirm deletion within 30 days.
             </li>
           </ol>
         </section>
 
         <section className="pt-8 border-t border-zinc-200 dark:border-white/10">
-          <h2 className="text-2xl font-bold text-foreground mb-4">12. Contact Information</h2>
-          <p>For any privacy-related questions, please contact:</p>
+          <h2 className="text-2xl font-bold text-foreground mb-4">12. Legal Entity &amp; Contact Information</h2>
+          <p>MegaDM is operated by MEGASTACK AI LLP. For any privacy-related questions, please contact:</p>
           <p className="mt-4">
-            Email: <a href="mailto:privacy@megadm.chat" className="text-[#ec4899] hover:underline font-bold">privacy@megadm.chat</a>
+            Email: <a href="mailto:support@megadm.chat" className="text-[#ec4899] hover:underline font-bold">support@megadm.chat</a>
+          </p>
+          <p className="mt-2">
+            Phone: +91 9111022290
+          </p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Registered Office: Cabin No. H, 3rd Floor, E-3/114, Arera Colony, Mahaveer Nagar, Habibganj Police Station, Huzur, Bhopal - 462016, Madhya Pradesh, India
           </p>
         </section>
       </div>
